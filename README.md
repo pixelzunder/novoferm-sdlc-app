@@ -14,10 +14,125 @@ database and no build step.
 
 You need Python 3.10 or newer.
 
+### Windows: install Python and start the app without admin rights
+
+The following steps use **Python 3.14** on Windows 10/11 and a normal PowerShell window.
+**Install Python for the current Windows user only, never for all users.** The app gets its
+own environment in the repo. Download and installer options checked on 2026-11-24.
+
+#### 1. Install Python once
+
+If Python 3.14 is already installed, use that installation's `python.exe` in step 2.
+For a new installation:
+
+1. Download the official [Python 3.14.10 installer for Windows 64-bit (EXE)](https://www.python.org/ftp/python/3.14.10/python-3.14.10-amd64.exe).
+   This is for Intel/AMD PCs. For ARM devices, use the ARM64 installer on the
+   [Python 3.14.10 release page](https://www.python.org/downloads/release/python-31410/).
+2. Open the downloaded file normally, without **Run as administrator**.
+3. Check **Add python.exe to PATH**. Uncheck **Use admin privileges when installing py.exe**
+   (or **Install launcher for all users**, depending on the installer wording).
+4. Choose **Install Now** to install **only for your user**. Keep the installation in
+   `%LocalAppData%\Programs\Python\Python314`; leave **Install for all users** unchecked
+   if you use the custom installation screen.
+5. If offered **Disable path length limit** at the end, skip it: that system setting needs
+   admin rights and is not required for this app in a short project path.
+6. Close and reopen PowerShell, then check:
+
+```powershell
+& "$env:LOCALAPPDATA\Programs\Python\Python314\python.exe" --version
 ```
+
+Expected output for this download: `Python 3.14.10`. If you chose a different installation
+folder, adjust the executable path here and in step 2. Using the full path also avoids
+conflicts with other Python versions or the Microsoft Store alias.
+
+The [official installer documentation](https://docs.python.org/3.14/using/windows.html#installation-steps)
+describes installation for the current user. Company policies can still block software
+installation or require an IT-installed system prerequisite; in that case, ask IT to provide
+Python rather than an administrator account.
+
+#### Alternative: automate the same user-only installation
+
+For a new Intel/AMD 64-bit installation, this PowerShell block downloads and runs the same
+installer. It can also be run by an agent on the Windows machine. Use it instead of the
+installer clicks above, from a normal, non-administrator PowerShell window:
+
+```powershell
+$pythonInstaller = Join-Path $env:TEMP 'python-3.14.10-amd64.exe'
+$pythonTarget = Join-Path $env:LOCALAPPDATA 'Programs\Python\Python314'
+Invoke-WebRequest -UseBasicParsing -Uri 'https://www.python.org/ftp/python/3.14.10/python-3.14.10-amd64.exe' -OutFile $pythonInstaller -ErrorAction Stop
+$expectedHash = '92480239264744fe0386a1bd8275786fefa126e3129e56a68e22b52c73329965'
+if ((Get-FileHash $pythonInstaller -Algorithm SHA256).Hash -ne $expectedHash) {
+    throw 'Python installer checksum does not match the official release.'
+}
+$installerArgs = @(
+    '/passive', 'InstallAllUsers=0', 'InstallLauncherAllUsers=0',
+    'Include_launcher=0', 'Include_pip=1', 'Include_test=0', 'PrependPath=0',
+    ('TargetDir="{0}"' -f $pythonTarget)
+)
+$installProcess = Start-Process -FilePath $pythonInstaller -ArgumentList $installerArgs -Wait -PassThru
+if ($installProcess.ExitCode -ne 0) {
+    throw "Python setup returned exit code $($installProcess.ExitCode). Check its result before continuing."
+}
+& (Join-Path $pythonTarget 'python.exe') --version
+```
+
+`InstallAllUsers=0` selects the current user. This variant omits the launcher and PATH changes;
+the commands below call `python.exe` directly. The SHA-256 matches the official release page.
+The [installer options](https://docs.python.org/3.14/using/windows.html#installing-without-ui)
+are documented by Python.
+
+The download is a full **EXE installer**. The separate **embeddable ZIP** omits `pip` and is
+intended for application bundling, so it does not fit the `venv`/`pip` setup below. Automated
+setup can use the installer block above without a separate ZIP workflow.
+
+#### 2. Set up the app once
+
+Clone or extract the complete repository into a folder you can write to, for example
+`C:\Users\YOUR_NAME\Projects\novoferm-sdlc-app`. Open a normal PowerShell window and change
+to that folder (replace the example path with your actual path). It must contain
+`pyproject.toml`, `src` and `data`.
+
+```powershell
+cd "$env:USERPROFILE\Projects\novoferm-sdlc-app"
+& "$env:LOCALAPPDATA\Programs\Python\Python314\python.exe" -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e .
+```
+
+The `pip` step needs internet access to download the packaging tool `setuptools`.
+The app itself has no runtime dependencies. Everything is installed inside `.venv`.
+
+#### 3. Start the app
+
+From the same repo folder, run:
+
+```powershell
+.\.venv\Scripts\python.exe -m doorcfg serve
+```
+
+Open **<http://127.0.0.1:8080/?lang=de>** in your browser. Leave PowerShell open while using
+the app; **Ctrl+C** stops it. On later starts, only change to the repo folder and run this
+command again. If port 8080 is already in use, append `--port 8081` and open port 8081 instead.
+
+These commands call the environment's Python directly. No `Activate.ps1` or PowerShell
+execution-policy change is needed. For the CLI examples below, use
+`.\.venv\Scripts\python.exe` wherever they say `python`.
+
+#### Optional: run the tests on Windows
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+.\.venv\Scripts\python.exe -m pytest
+```
+
+### macOS / Linux
+
+From the repo folder, with Python 3.10 or newer installed:
+
+```sh
 python -m venv .venv
-.venv/bin/python -m pip install -e ".[dev]"      # Windows: .venv\Scripts\python -m pip install -e ".[dev]"
-source .venv/bin/activate                         # Windows: .venv\Scripts\activate
+.venv/bin/python -m pip install -e ".[dev]"
+source .venv/bin/activate
 ```
 
 `[dev]` installs `pytest`, the only development dependency.
