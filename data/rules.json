@@ -9,6 +9,11 @@
     "smooth": { "price_cents_per_m2": 11200 },
     "ribbed": { "price_cents_per_m2": 10400 }
   },
+  "insulations": {
+    "single": { "price_cents_per_m2": 0 },
+    "double": { "price_cents_per_m2": 1800 },
+    "thermo": { "price_cents_per_m2": 3200 }
+  },
   "drives": {
     "manual": { "price_cents": 0, "max_width_mm": 3500 },
     "standard": { "price_cents": 34900, "max_width_mm": 5000 },

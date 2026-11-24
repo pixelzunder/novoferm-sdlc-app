@@ -14,6 +14,7 @@ class DoorConfiguration:
     surface: str
     drive: str
     options: frozenset[str] = field(default_factory=frozenset)
+    insulation: str = "single"
 
 
 @dataclass(frozen=True)

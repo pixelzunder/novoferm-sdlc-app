@@ -24,7 +24,8 @@ from doorcfg.rules import MANUAL_DRIVE, RuleSet, load_rules
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8080
 CENTS_PER_EURO = 100
-FORM_LABELS = ("width", "height", "surface", "drive", "options", "submit")
+DEFAULT_INSULATION = "single"
+FORM_LABELS = ("width", "height", "surface", "insulation", "drive", "options", "submit")
 
 Query = Mapping[str, Sequence[str]]
 
@@ -68,6 +69,7 @@ def parse_config(query: Query) -> DoorConfiguration:
         surface=surface,
         drive=_first(query, "drive") or MANUAL_DRIVE,
         options=frozenset(value for value in query.get("option", []) if value),
+        insulation=_first(query, "insulation") or DEFAULT_INSULATION,
     )
 
 
@@ -147,6 +149,9 @@ def _form_html(rules: RuleSet, query: Query, messages: Messages) -> str:
     <div><label for="surface">{label["surface"]}</label>
       <select id="surface" name="surface">
         {_options_html(sorted(rules.surfaces), _first(query, "surface"))}</select></div>
+    <div><label for="insulation">{label["insulation"]}</label>
+      <select id="insulation" name="insulation">
+        {_options_html(list(rules.insulations), _first(query, "insulation"))}</select></div>
     <div><label for="drive">{label["drive"]}</label>
       <select id="drive" name="drive">
         {_options_html(list(rules.drives), _first(query, "drive"))}</select></div>

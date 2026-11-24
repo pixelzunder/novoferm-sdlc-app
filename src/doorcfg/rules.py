@@ -43,6 +43,7 @@ class RuleSet:
     width_mm: Range
     height_mm: Range
     surfaces: dict[str, int]
+    insulations: dict[str, int]
     drives: dict[str, DriveRule]
     options: dict[str, OptionRule]
     vat_percent: int
@@ -59,6 +60,9 @@ def parse_rules(raw: dict[str, Any]) -> RuleSet:
         height_mm=_range(raw["dimensions"]["height_mm"]),
         surfaces={
             name: int(entry["price_cents_per_m2"]) for name, entry in raw["surfaces"].items()
+        },
+        insulations={
+            name: int(entry["price_cents_per_m2"]) for name, entry in raw["insulations"].items()
         },
         drives={
             name: DriveRule(
@@ -104,6 +108,10 @@ def validate(config: DoorConfiguration, rules: RuleSet) -> list[Violation]:
         )
     if config.surface not in rules.surfaces:
         violations.append(Violation("UNKNOWN_SURFACE", f"Unknown surface '{config.surface}'."))
+    if config.insulation not in rules.insulations:
+        violations.append(
+            Violation("UNKNOWN_INSULATION", f"Unknown insulation '{config.insulation}'.")
+        )
 
     drive = rules.drives.get(config.drive)
     if drive is None:

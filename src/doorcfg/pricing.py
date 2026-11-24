@@ -29,6 +29,11 @@ def panel_price_cents(config: DoorConfiguration, rules: RuleSet) -> int:
     return divide_half_up(area_mm2 * rules.surfaces[config.surface], MM2_PER_M2)
 
 
+def insulation_price_cents(config: DoorConfiguration, rules: RuleSet) -> int:
+    area_mm2 = config.width_mm * config.height_mm
+    return divide_half_up(area_mm2 * rules.insulations[config.insulation], MM2_PER_M2)
+
+
 def net_price_cents(config: DoorConfiguration, rules: RuleSet) -> int:
     """Net price in cents. Raises InvalidConfigurationError for invalid configurations."""
     violations = validate(config, rules)
@@ -36,6 +41,7 @@ def net_price_cents(config: DoorConfiguration, rules: RuleSet) -> int:
         raise InvalidConfigurationError(violations)
 
     total = panel_price_cents(config, rules)
+    total += insulation_price_cents(config, rules)
     total += rules.drives[config.drive].price_cents
     total += sum(rules.options[name].price_cents for name in config.options)
     return total

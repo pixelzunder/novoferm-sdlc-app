@@ -29,6 +29,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--height", type=int, required=True, help="height in mm")
     parser.add_argument("--surface", required=True)
     parser.add_argument("--drive", default="manual")
+    parser.add_argument("--insulation", default="single")
     parser.add_argument("--option", action="append", default=[], help="repeatable")
     return parser
 
@@ -45,6 +46,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         surface=args.surface,
         drive=args.drive,
         options=frozenset(args.option),
+        insulation=args.insulation,
     )
     result = evaluate(config, load_rules())
     print(json.dumps(result, indent=2))
