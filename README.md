@@ -376,6 +376,7 @@ python -m pytest
 | `tests/test_cli.py` | output, exit codes and the `serve` command |
 | `tests/test_web.py` | page, JSON API, escaping, languages and a real HTTP request |
 | `tests/test_messages.py` | completeness of every language file and the fallback to English |
+| `tests/test_architecture.py` | fitness functions: allowed imports between modules, standard library only, no floats in pricing, file types per folder |
 | `tests/test_insulation.py` | the insulation attribute in rules, pricing, command line, API, page and texts |
 
 `tests/conftest.py` provides two fixtures: `rules` (the rule set from `data/rules.json`) and

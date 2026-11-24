@@ -32,6 +32,8 @@ models.py    dataclasses without logic        messages.py   texts per language
 - Front ends (`cli.py`, `web.py`) only parse input, call `evaluate()` and format the answer.
   No business rule and no price calculation lives there.
 - `models.py`, `rules.py` and `pricing.py` never import `cli`, `web` or `messages`.
+- These rules are enforced by `tests/test_architecture.py` (fitness functions). A new module
+  needs an entry in `ALLOWED_IMPORTS` there. Do not relax a fitness function without asking.
 
 ## Rules for every change
 
