@@ -59,3 +59,5 @@ models.py    dataclasses without logic        messages.py   texts per language
 
 - Never commit to `main`. Work on a branch: `feature/<short-name>` or `fix/<short-name>`.
 - Small commits, one topic each. Do not commit or push unless you are asked to.
+- Commit messages: Conventional Commits with an emoji and a ticket number. The details are in
+  the skill `.claude/skills/commit/SKILL.md` - follow it for every commit.
