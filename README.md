@@ -25,9 +25,9 @@ own environment in the repo. Download and installer options checked on 2026-11-2
 If Python 3.14 is already installed, use that installation's `python.exe` in step 2.
 For a new installation:
 
-1. Download the official [Python 3.14.10 installer for Windows 64-bit (EXE)](https://www.python.org/ftp/python/3.14.10/python-3.14.10-amd64.exe).
-   This is for Intel/AMD PCs. For ARM devices, use the ARM64 installer on the
-   [Python 3.14.10 release page](https://www.python.org/downloads/release/python-31410/).
+1. Download the official Python 3.14.10 installer matching your PC:
+   [Intel/AMD (64-bit, EXE)](https://www.python.org/ftp/python/3.14.10/python-3.14.10-amd64.exe)
+   or [Windows on ARM (ARM64, EXE)](https://www.python.org/ftp/python/3.14.10/python-3.14.10-arm64.exe).
 2. Open the downloaded file normally, without **Run as administrator**.
 3. Check **Add python.exe to PATH**. Uncheck **Use admin privileges when installing py.exe**
    (or **Install launcher for all users**, depending on the installer wording).
@@ -50,41 +50,6 @@ The [official installer documentation](https://docs.python.org/3.14/using/window
 describes installation for the current user. Company policies can still block software
 installation or require an IT-installed system prerequisite; in that case, ask IT to provide
 Python rather than an administrator account.
-
-#### Alternative: automate the same user-only installation
-
-For a new Intel/AMD 64-bit installation, this PowerShell block downloads and runs the same
-installer. It can also be run by an agent on the Windows machine. Use it instead of the
-installer clicks above, from a normal, non-administrator PowerShell window:
-
-```powershell
-$pythonInstaller = Join-Path $env:TEMP 'python-3.14.10-amd64.exe'
-$pythonTarget = Join-Path $env:LOCALAPPDATA 'Programs\Python\Python314'
-Invoke-WebRequest -UseBasicParsing -Uri 'https://www.python.org/ftp/python/3.14.10/python-3.14.10-amd64.exe' -OutFile $pythonInstaller -ErrorAction Stop
-$expectedHash = '92480239264744fe0386a1bd8275786fefa126e3129e56a68e22b52c73329965'
-if ((Get-FileHash $pythonInstaller -Algorithm SHA256).Hash -ne $expectedHash) {
-    throw 'Python installer checksum does not match the official release.'
-}
-$installerArgs = @(
-    '/passive', 'InstallAllUsers=0', 'InstallLauncherAllUsers=0',
-    'Include_launcher=0', 'Include_pip=1', 'Include_test=0', 'PrependPath=0',
-    ('TargetDir="{0}"' -f $pythonTarget)
-)
-$installProcess = Start-Process -FilePath $pythonInstaller -ArgumentList $installerArgs -Wait -PassThru
-if ($installProcess.ExitCode -ne 0) {
-    throw "Python setup returned exit code $($installProcess.ExitCode). Check its result before continuing."
-}
-& (Join-Path $pythonTarget 'python.exe') --version
-```
-
-`InstallAllUsers=0` selects the current user. This variant omits the launcher and PATH changes;
-the commands below call `python.exe` directly. The SHA-256 matches the official release page.
-The [installer options](https://docs.python.org/3.14/using/windows.html#installing-without-ui)
-are documented by Python.
-
-The download is a full **EXE installer**. The separate **embeddable ZIP** omits `pip` and is
-intended for application bundling, so it does not fit the `venv`/`pip` setup below. Automated
-setup can use the installer block above without a separate ZIP workflow.
 
 #### 2. Set up the app once
 
