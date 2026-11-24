@@ -1,0 +1,32 @@
+{
+  "language_name": "Nederlands",
+  "text": {
+    "title": "Deurconfigurator",
+    "note": "Fictieve regels en prijzen - geen productgegevens van Novoferm.",
+    "language": "Taal",
+    "width": "Breedte (mm)",
+    "height": "Hoogte (mm)",
+    "range": "{min} tot {max}",
+    "surface": "Oppervlak",
+    "insulation": "Isolatie",
+    "drive": "Aandrijving",
+    "options": "Opties",
+    "submit": "Controleren en prijs berekenen",
+    "ok_title": "Deze deur kan worden gebouwd",
+    "net_price": "nettoprijs",
+    "bad_title": "Deze deur kan niet worden gebouwd",
+    "input_title": "Invoer niet begrepen",
+    "same_as_json": "Hetzelfde antwoord als JSON:",
+    "same_on_cli": "of op de opdrachtregel:"
+  },
+  "violations": {
+    "WIDTH_OUT_OF_RANGE": "De breedte ligt buiten het toegestane bereik.",
+    "HEIGHT_OUT_OF_RANGE": "De hoogte ligt buiten het toegestane bereik.",
+    "UNKNOWN_SURFACE": "Dit oppervlak bestaat niet.",
+    "UNKNOWN_INSULATION": "Deze isolatie bestaat niet.",
+    "UNKNOWN_DRIVE": "Deze aandrijving bestaat niet.",
+    "DRIVE_TOO_WEAK": "De aandrijving is te zwak voor deze breedte.",
+    "UNKNOWN_OPTION": "Deze optie bestaat niet.",
+    "OPTION_REQUIRES_DRIVE": "Deze optie vereist een motoraandrijving."
+  }
+}

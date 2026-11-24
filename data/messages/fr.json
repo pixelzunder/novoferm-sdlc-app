@@ -1,0 +1,32 @@
+{
+  "language_name": "Français",
+  "text": {
+    "title": "Configurateur de portes",
+    "note": "Règles et prix fictifs - pas de données produit Novoferm.",
+    "language": "Langue",
+    "width": "Largeur (mm)",
+    "height": "Hauteur (mm)",
+    "range": "{min} à {max}",
+    "surface": "Surface",
+    "insulation": "Isolation",
+    "drive": "Motorisation",
+    "options": "Options",
+    "submit": "Vérifier et calculer le prix",
+    "ok_title": "Cette porte peut être fabriquée",
+    "net_price": "prix net",
+    "bad_title": "Cette porte ne peut pas être fabriquée",
+    "input_title": "Saisie non comprise",
+    "same_as_json": "La même réponse en JSON :",
+    "same_on_cli": "ou en ligne de commande :"
+  },
+  "violations": {
+    "WIDTH_OUT_OF_RANGE": "La largeur est en dehors de la plage autorisée.",
+    "HEIGHT_OUT_OF_RANGE": "La hauteur est en dehors de la plage autorisée.",
+    "UNKNOWN_SURFACE": "Cette surface n'existe pas.",
+    "UNKNOWN_INSULATION": "Cette isolation n'existe pas.",
+    "UNKNOWN_DRIVE": "Cette motorisation n'existe pas.",
+    "DRIVE_TOO_WEAK": "La motorisation est trop faible pour cette largeur.",
+    "UNKNOWN_OPTION": "Cette option n'existe pas.",
+    "OPTION_REQUIRES_DRIVE": "Cette option nécessite une motorisation."
+  }
+}

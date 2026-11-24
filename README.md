@@ -158,7 +158,8 @@ python -m doorcfg serve --host 0.0.0.0  # reachable from other machines
 The page shows a form with width, height, surface, insulation, drive and options. After submitting it shows
 the net price or the list of broken rules. `Ctrl+C` stops the server.
 
-The page is available in English and German: `/?lang=de`. An unknown language code gives English.
+The page is available in English, German, French, Dutch and Polish: `/?lang=de`, `/?lang=fr`,
+`/?lang=nl`, `/?lang=pl`. An unknown language code gives English.
 
 ### JSON API
 
@@ -186,6 +187,7 @@ data/
   rules.json             limits, allowed values and prices
   messages/en.json       texts of the web page, English (the reference)
   messages/de.json       texts of the web page, German
+  messages/fr.json       French;  nl.json  Dutch;  pl.json  Polish
 src/doorcfg/
   __main__.py            makes "python -m doorcfg" work
   cli.py                 command line front end

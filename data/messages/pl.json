@@ -1,0 +1,32 @@
+{
+  "language_name": "Polski",
+  "text": {
+    "title": "Konfigurator bram",
+    "note": "Fikcyjne reguły i ceny - to nie są dane produktów Novoferm.",
+    "language": "Język",
+    "width": "Szerokość (mm)",
+    "height": "Wysokość (mm)",
+    "range": "od {min} do {max}",
+    "surface": "Powierzchnia",
+    "insulation": "Izolacja",
+    "drive": "Napęd",
+    "options": "Opcje",
+    "submit": "Sprawdź i wyceń",
+    "ok_title": "Tę bramę można wykonać",
+    "net_price": "cena netto",
+    "bad_title": "Tej bramy nie można wykonać",
+    "input_title": "Nie rozpoznano danych",
+    "same_as_json": "Ta sama odpowiedź jako JSON:",
+    "same_on_cli": "lub w wierszu poleceń:"
+  },
+  "violations": {
+    "WIDTH_OUT_OF_RANGE": "Szerokość jest poza dozwolonym zakresem.",
+    "HEIGHT_OUT_OF_RANGE": "Wysokość jest poza dozwolonym zakresem.",
+    "UNKNOWN_SURFACE": "Taka powierzchnia nie istnieje.",
+    "UNKNOWN_INSULATION": "Taka izolacja nie istnieje.",
+    "UNKNOWN_DRIVE": "Taki napęd nie istnieje.",
+    "DRIVE_TOO_WEAK": "Napęd jest za słaby dla tej szerokości.",
+    "UNKNOWN_OPTION": "Taka opcja nie istnieje.",
+    "OPTION_REQUIRES_DRIVE": "Ta opcja wymaga napędu silnikowego."
+  }
+}
