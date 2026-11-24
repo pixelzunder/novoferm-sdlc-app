@@ -42,6 +42,7 @@ def test_every_violation_code_of_the_rules_has_a_text(rules: RuleSet) -> None:
         height_mm=rules.height_mm.max + 1,
         surface="no-such-surface",
         drive="no-such-drive",
+        insulation="no-such-insulation",
         options=frozenset({"no-such-option"}),
     )
     codes = {violation.code for violation in validate(broken, rules)}
