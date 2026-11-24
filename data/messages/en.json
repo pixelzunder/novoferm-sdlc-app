@@ -1,0 +1,30 @@
+{
+  "language_name": "English",
+  "text": {
+    "title": "Door configurator",
+    "note": "Fictional rules and prices - not Novoferm product data.",
+    "language": "Language",
+    "width": "Width (mm)",
+    "height": "Height (mm)",
+    "range": "{min} to {max}",
+    "surface": "Surface",
+    "drive": "Drive",
+    "options": "Options",
+    "submit": "Check and price",
+    "ok_title": "This door can be built",
+    "net_price": "net price",
+    "bad_title": "This door cannot be built",
+    "input_title": "Input not understood",
+    "same_as_json": "The same answer as JSON:",
+    "same_on_cli": "or on the command line:"
+  },
+  "violations": {
+    "WIDTH_OUT_OF_RANGE": "The width is outside the allowed range.",
+    "HEIGHT_OUT_OF_RANGE": "The height is outside the allowed range.",
+    "UNKNOWN_SURFACE": "This surface does not exist.",
+    "UNKNOWN_DRIVE": "This drive does not exist.",
+    "DRIVE_TOO_WEAK": "The drive is too weak for this width.",
+    "UNKNOWN_OPTION": "This option does not exist.",
+    "OPTION_REQUIRES_DRIVE": "This option needs a motor drive."
+  }
+}
