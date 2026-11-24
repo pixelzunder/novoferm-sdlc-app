@@ -25,9 +25,9 @@ own environment in the repo. Download and installer options checked on 2026-11-2
 If Python 3.14 is already installed, use that installation's `python.exe` in step 2.
 For a new installation:
 
-1. Download the official [Python 3.14.10 installer for Windows 64-bit (EXE)](https://www.python.org/ftp/python/3.14.10/python-3.14.10-amd64.exe).
-   This is for Intel/AMD PCs. For ARM devices, use the ARM64 installer on the
-   [Python 3.14.10 release page](https://www.python.org/downloads/release/python-31410/).
+1. Download the official Python 3.14.10 installer matching your PC:
+   [Intel/AMD (64-bit, EXE)](https://www.python.org/ftp/python/3.14.10/python-3.14.10-amd64.exe)
+   or [Windows on ARM (ARM64, EXE)](https://www.python.org/ftp/python/3.14.10/python-3.14.10-arm64.exe).
 2. Open the downloaded file normally, without **Run as administrator**.
 3. Check **Add python.exe to PATH**. Uncheck **Use admin privileges when installing py.exe**
    (or **Install launcher for all users**, depending on the installer wording).
