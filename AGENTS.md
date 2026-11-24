@@ -13,6 +13,7 @@ Use the Python of the virtual environment. Do not install anything globally.
 |---|---|---|
 | Install | `.venv/bin/python -m pip install -e ".[dev]"` | `.\.venv\Scripts\python.exe -m pip install -e ".[dev]"` |
 | All tests | `.venv/bin/python -m pytest` | `.\.venv\Scripts\python.exe -m pytest` |
+| Lint | `.venv/bin/python -m ruff check .` | `.\.venv\Scripts\python.exe -m ruff check .` |
 | One test file | `.venv/bin/python -m pytest tests/test_pricing.py` | same with the Windows path |
 | Start the page | `.venv/bin/python -m doorcfg serve --port 8080` | same with the Windows path |
 | One quote | `.venv/bin/python -m doorcfg --width 2500 --height 2125 --surface smooth` | same with the Windows path |
@@ -60,13 +61,15 @@ models.py    dataclasses without logic        messages.py   texts per language
 
 ## Before you say "done"
 
-- `python -m pytest` is green, and you say how many tests ran.
+- `python -m ruff check .` and `python -m pytest` are green, and you say how many tests ran.
 - For a change of the page: you started the server and looked at the result (chrome-devtools).
 - You list what you changed and what you did not check.
 
 ## Git
 
 - Never commit to `main`. Work on a branch: `feature/<short-name>` or `fix/<short-name>`.
+- The pre-commit hook runs `ruff check` and the tests. When it rejects a commit, read its
+  output and fix the cause. Never use `--no-verify` and never edit `.githooks/` to get through.
 - Small commits, one topic each. Do not commit or push unless you are asked to.
 - Commit messages: Conventional Commits with an emoji and a ticket number. The details are in
   the skill `.claude/skills/commit/SKILL.md` - follow it for every commit.

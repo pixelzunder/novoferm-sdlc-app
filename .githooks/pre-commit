@@ -1,0 +1,27 @@
+#!/bin/sh
+# Runs before every commit: lint first (fast), then the tests.
+# Activate once per clone:  git config core.hooksPath .githooks
+
+if [ -x .venv/bin/python ]; then
+  PYTHON=.venv/bin/python
+elif [ -x .venv/Scripts/python.exe ]; then
+  PYTHON=.venv/Scripts/python.exe
+else
+  PYTHON=python
+fi
+
+echo "pre-commit 1/2: ruff check"
+if ! "$PYTHON" -m ruff check .; then
+  echo ""
+  echo "Commit rejected: ruff found problems (see above)."
+  echo "Fix them, or let ruff fix the safe ones: $PYTHON -m ruff check . --fix"
+  exit 1
+fi
+
+echo "pre-commit 2/2: pytest"
+if ! "$PYTHON" -m pytest -q; then
+  echo ""
+  echo "Commit rejected: tests fail (see above)."
+  echo "Fix the code. Do not delete or weaken a test, and do not use --no-verify."
+  exit 1
+fi

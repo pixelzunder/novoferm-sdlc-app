@@ -100,7 +100,7 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-`[dev]` installs `pytest`, the only development dependency.
+`[dev]` installs the development tools `pytest` and `ruff`.
 
 ## Usage
 
@@ -349,6 +349,17 @@ treats it as "no motor".
 Each file has a `language_name`, a `text` object (labels and headings of the page, with
 placeholders such as `{min}`) and a `violations` object (one text per violation code). To add a
 language, copy `en.json` to a new file named after the language code and translate the values.
+
+## Pre-commit hook
+
+`.githooks/pre-commit` runs `ruff check` and then the tests before every commit. A commit with
+a lint finding or a failing test is rejected. Activate the hook once per clone:
+
+```
+git config core.hooksPath .githooks
+```
+
+The hook uses the Python of `.venv` and needs the development tools (`pip install -e ".[dev]"`).
 
 ## Tests
 

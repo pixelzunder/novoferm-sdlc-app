@@ -196,7 +196,7 @@ def render_page(
     evaluation: Evaluation | None = None,
     error: str | None = None,
 ) -> str:
-    width, height, surface = rules.width_mm.min, rules.height_mm.min, sorted(rules.surfaces)[0]
+    width, height, surface = rules.width_mm.min, rules.height_mm.min, min(rules.surfaces)
     api_example = f"/api/quote?width={width}&height={height}&surface={surface}"
     cli_example = f"python -m doorcfg --width {width} --height {height} --surface {surface}"
     title = html.escape(messages.t("title"))
