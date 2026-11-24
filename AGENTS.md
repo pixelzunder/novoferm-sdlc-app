@@ -49,10 +49,19 @@ models.py    dataclasses without logic        messages.py   texts per language
 8. **Keep the README true.** Arguments, parameters, violation codes, prices and the test table
    are documented there. Update them in the same change.
 
+## Tools (MCP)
+
+`.mcp.json` connects two servers. Both run with the rights of the developer.
+
+- **context7**: current documentation of libraries and of Python itself. Use it instead of
+  guessing an API, for example when a question is about a new Python version.
+- **chrome-devtools**: a real browser. Use it to look at the page after a change of `web.py`:
+  open `http://127.0.0.1:8080/`, submit the form, check the console for errors.
+
 ## Before you say "done"
 
 - `python -m pytest` is green, and you say how many tests ran.
-- For a change of the page: you started the server and looked at the result.
+- For a change of the page: you started the server and looked at the result (chrome-devtools).
 - You list what you changed and what you did not check.
 
 ## Git
