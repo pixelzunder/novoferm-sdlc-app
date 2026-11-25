@@ -12,7 +12,15 @@ def test_cli_prints_price_for_valid_door(capsys: pytest.CaptureFixture[str]) -> 
     )
     result = json.loads(capsys.readouterr().out)
     assert exit_code == 0
-    assert result == {"valid": True, "violations": [], "net_price_cents": 94_400}
+    assert result == {
+        "valid": True,
+        "violations": [],
+        "net_price_cents": 94_400,
+        "quantity": 1,
+        "discount_percent": 0,
+        "discount_cents": 0,
+        "total_net_price_cents": 94_400,
+    }
 
 
 def test_cli_reports_violations(capsys: pytest.CaptureFixture[str]) -> None:

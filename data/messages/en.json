@@ -10,10 +10,14 @@
     "surface": "Surface",
     "insulation": "Insulation",
     "drive": "Drive",
+    "quantity": "Quantity",
     "options": "Options",
     "submit": "Check and price",
     "ok_title": "This door can be built",
     "net_price": "net price",
+    "net_total": "net price for {quantity} doors",
+    "per_door": "{price} per door",
+    "discount": "{percent} % quantity discount: -{amount}",
     "bad_title": "This door cannot be built",
     "input_title": "Input not understood",
     "same_as_json": "The same answer as JSON:",
@@ -27,6 +31,7 @@
     "UNKNOWN_DRIVE": "This drive does not exist.",
     "DRIVE_TOO_WEAK": "The drive is too weak for this width.",
     "UNKNOWN_OPTION": "This option does not exist.",
-    "OPTION_REQUIRES_DRIVE": "This option needs a motor drive."
+    "OPTION_REQUIRES_DRIVE": "This option needs a motor drive.",
+    "QUANTITY_OUT_OF_RANGE": "The quantity is outside the allowed range."
   }
 }

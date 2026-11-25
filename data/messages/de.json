@@ -10,10 +10,14 @@
     "surface": "Oberfläche",
     "insulation": "Dämmung",
     "drive": "Antrieb",
+    "quantity": "Anzahl",
     "options": "Optionen",
     "submit": "Prüfen und Preis berechnen",
     "ok_title": "Dieses Tor kann gebaut werden",
     "net_price": "Nettopreis",
+    "net_total": "Nettopreis für {quantity} Tore",
+    "per_door": "{price} pro Tor",
+    "discount": "{percent} % Mengenrabatt: -{amount}",
     "bad_title": "Dieses Tor kann nicht gebaut werden",
     "input_title": "Eingabe nicht verstanden",
     "same_as_json": "Dieselbe Antwort als JSON:",
@@ -27,6 +31,7 @@
     "UNKNOWN_DRIVE": "Diesen Antrieb gibt es nicht.",
     "DRIVE_TOO_WEAK": "Der Antrieb ist für diese Breite zu schwach.",
     "UNKNOWN_OPTION": "Diese Option gibt es nicht.",
-    "OPTION_REQUIRES_DRIVE": "Diese Option braucht einen Motorantrieb."
+    "OPTION_REQUIRES_DRIVE": "Diese Option braucht einen Motorantrieb.",
+    "QUANTITY_OUT_OF_RANGE": "Die Anzahl liegt außerhalb des erlaubten Bereichs."
   }
 }

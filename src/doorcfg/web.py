@@ -25,7 +25,17 @@ DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8080
 CENTS_PER_EURO = 100
 DEFAULT_INSULATION = "single"
-FORM_LABELS = ("width", "height", "surface", "insulation", "drive", "options", "submit")
+DEFAULT_QUANTITY = 1
+FORM_LABELS = (
+    "width",
+    "height",
+    "surface",
+    "insulation",
+    "drive",
+    "quantity",
+    "options",
+    "submit",
+)
 
 Query = Mapping[str, Sequence[str]]
 
@@ -58,6 +68,15 @@ def _millimetres(query: Query, name: str) -> int:
     return int(raw)
 
 
+def _quantity(query: Query) -> int:
+    raw = _first(query, "quantity")
+    if not raw:
+        return DEFAULT_QUANTITY
+    if not raw.lstrip("-").isdigit():
+        raise FormError("'quantity' must be a whole number of doors.")
+    return int(raw)
+
+
 def parse_config(query: Query) -> DoorConfiguration:
     """Turns query parameters into a configuration. Business rules are checked later."""
     surface = _first(query, "surface")
@@ -70,6 +89,7 @@ def parse_config(query: Query) -> DoorConfiguration:
         drive=_first(query, "drive") or MANUAL_DRIVE,
         options=frozenset(value for value in query.get("option", []) if value),
         insulation=_first(query, "insulation") or DEFAULT_INSULATION,
+        quantity=_quantity(query),
     )
 
 
@@ -126,6 +146,7 @@ def _language_html(messages: Messages) -> str:
 
 def _form_html(rules: RuleSet, query: Query, messages: Messages) -> str:
     width, height = rules.width_mm, rules.height_mm
+    quantity_hint = messages.t("range", min=rules.quantity.min, max=rules.quantity.max)
     label = {key: html.escape(messages.t(key)) for key in FORM_LABELS}
     chosen = set(query.get("option", []))
     checks = "".join(
@@ -155,10 +176,30 @@ def _form_html(rules: RuleSet, query: Query, messages: Messages) -> str:
     <div><label for="drive">{label["drive"]}</label>
       <select id="drive" name="drive">
         {_options_html(list(rules.drives), _first(query, "drive"))}</select></div>
+    <div><label for="quantity">{label["quantity"]}</label>
+      <input id="quantity" name="quantity" type="number" required
+             value="{html.escape(_first(query, "quantity") or str(DEFAULT_QUANTITY))}">
+      <p class="hint">{html.escape(quantity_hint)}</p></div>
   </div>
   <fieldset><legend>{label["options"]}</legend>{checks}</fieldset>
   <button type="submit">{label["submit"]}</button>
 </form>"""
+
+
+def _price_details_html(evaluation: Evaluation, price: int, messages: Messages) -> str:
+    """What the large price means: one door, or an order with price per door and discount."""
+    quantity = evaluation["quantity"]
+    if quantity == DEFAULT_QUANTITY:
+        return f'<p class="hint">{html.escape(messages.t("net_price"))}</p>'
+    lines = [
+        messages.t("net_total", quantity=quantity),
+        messages.t("per_door", price=format_eur(price)),
+    ]
+    discount = evaluation["discount_cents"]
+    if discount:
+        percent = evaluation["discount_percent"]
+        lines.append(messages.t("discount", percent=percent, amount=format_eur(discount)))
+    return "".join(f'<p class="hint">{html.escape(line)}</p>' for line in lines)
 
 
 def _result_html(evaluation: Evaluation | None, error: str | None, messages: Messages) -> str:
@@ -170,13 +211,13 @@ def _result_html(evaluation: Evaluation | None, error: str | None, messages: Mes
         )
     if evaluation is None:
         return ""
-    price = evaluation["net_price_cents"]
-    if price is not None:
+    price, total = evaluation["net_price_cents"], evaluation["total_net_price_cents"]
+    if price is not None and total is not None:
         return (
             '<section class="result result--ok" role="status">'
             f"<h2>{html.escape(messages.t('ok_title'))}</h2>"
-            f'<p class="price">{format_eur(price)}</p>'
-            f'<p class="hint">{html.escape(messages.t("net_price"))}</p></section>'
+            f'<p class="price">{format_eur(total)}</p>'
+            f"{_price_details_html(evaluation, price, messages)}</section>"
         )
     items = "".join(
         f"<li><code>{html.escape(v['code'])}</code> "

@@ -85,6 +85,10 @@ def test_api_returns_the_same_answer_as_the_cli(rules: RuleSet) -> None:
         "valid": True,
         "violations": [],
         "net_price_cents": 94_400,
+        "quantity": 1,
+        "discount_percent": 0,
+        "discount_cents": 0,
+        "total_net_price_cents": 94_400,
     }
 
 

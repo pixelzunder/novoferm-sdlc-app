@@ -114,7 +114,11 @@ python -m doorcfg --width 2500 --height 2125 --surface smooth --drive standard
 {
   "valid": true,
   "violations": [],
-  "net_price_cents": 94400
+  "net_price_cents": 94400,
+  "quantity": 1,
+  "discount_percent": 0,
+  "discount_cents": 0,
+  "total_net_price_cents": 94400
 }
 ```
 
@@ -126,6 +130,7 @@ python -m doorcfg --width 2500 --height 2125 --surface smooth --drive standard
 | `--insulation` | no | `single` (default), `double` or `thermo` |
 | `--drive` | no | `manual` (default), `standard` or `power` |
 | `--option` | no | `windows` or `smart_control`; repeat the argument for several options |
+| `--quantity` | no | number of identical doors, `1` (default) to `50`; from 5 doors there is a quantity discount |
 
 The exit code is `0` when the door can be built and `1` when it breaks a rule. A door that
 breaks a rule has no price:
@@ -143,7 +148,30 @@ python -m doorcfg --width 2500 --height 2125 --surface smooth --option smart_con
       "message": "Option 'smart_control' needs a motor drive."
     }
   ],
-  "net_price_cents": null
+  "net_price_cents": null,
+  "quantity": 1,
+  "discount_percent": null,
+  "discount_cents": null,
+  "total_net_price_cents": null
+}
+```
+
+`net_price_cents` is the price of one door. `total_net_price_cents` is the price of all doors
+of the order after the quantity discount:
+
+```
+python -m doorcfg --width 2500 --height 2125 --surface smooth --drive standard --quantity 5
+```
+
+```json
+{
+  "valid": true,
+  "violations": [],
+  "net_price_cents": 94400,
+  "quantity": 5,
+  "discount_percent": 5,
+  "discount_cents": 23600,
+  "total_net_price_cents": 448400
 }
 ```
 
@@ -155,8 +183,9 @@ python -m doorcfg serve --port 8081     # another port
 python -m doorcfg serve --host 0.0.0.0  # reachable from other machines
 ```
 
-The page shows a form with width, height, surface, insulation, drive and options. After submitting it shows
-the net price or the list of broken rules. `Ctrl+C` stops the server.
+The page shows a form with width, height, surface, insulation, drive, quantity and options.
+After submitting it shows the net price or the list of broken rules. For several doors it shows
+the order total, the price per door and the quantity discount. `Ctrl+C` stops the server.
 
 The page is available in English, German, French, Dutch and Polish: `/?lang=de`, `/?lang=fr`,
 `/?lang=nl`, `/?lang=pl`. An unknown language code gives English.
@@ -175,9 +204,8 @@ curl "http://127.0.0.1:8080/api/quote?width=2500&height=2125&surface=smooth&driv
 | `/api/quote` | `200` with the evaluation as JSON; `400` with `{"error": ...}` when a parameter is missing or not a number |
 | anything else | `404` |
 
-Query parameters are `width`, `height`, `surface`, `insulation`, `drive` and `option`
-(repeatable). The page
-additionally reads `lang`. Only `GET` is supported.
+Query parameters are `width`, `height`, `surface`, `insulation`, `drive`, `quantity` and
+`option` (repeatable). The page additionally reads `lang`. Only `GET` is supported.
 
 ## Project layout
 
@@ -197,8 +225,9 @@ src/doorcfg/
   pricing.py             net price calculation
   models.py              DoorConfiguration and Violation
   messages.py            loads the texts for one language
-tests/                   pytest tests, one file per module; test_insulation.py covers the
-                         insulation attribute across all modules
+tests/                   pytest tests, one file per module; test_insulation.py and
+                         test_quantity.py cover one feature across all modules
+docs/specs/              one spec per feature, written before the code
 ```
 
 ## How the code works
@@ -217,13 +246,14 @@ web.py ─┘                                     └─> pricing.net_price_cent
 Two frozen dataclasses without logic.
 
 - `DoorConfiguration`: `width_mm`, `height_mm`, `surface`, `drive`, `options` (a `frozenset`
-  of option names) and `insulation` (default `single`). This is what a customer asks for. It is not checked on creation.
+  of option names), `insulation` (default `single`) and `quantity` (default `1`). This is what
+  a customer asks for. It is not checked on creation.
 - `Violation`: one broken rule with a stable `code` and a human-readable English `message`.
 
 ### `rules.py`
 
 `load_rules()` reads `data/rules.json` and `parse_rules()` turns it into a typed `RuleSet`
-(`Range`, `DriveRule`, `OptionRule`). A missing field raises `KeyError`.
+(`Range`, `DriveRule`, `OptionRule`, `DiscountTier`). A missing field raises `KeyError`.
 
 `validate(config, rules)` returns **every** broken rule, not only the first one. An empty list
 means the door can be built. The checks, in this order:
@@ -238,6 +268,7 @@ means the door can be built. The checks, in this order:
 | `DRIVE_TOO_WEAK` | the door is wider than the drive's `max_width_mm` |
 | `UNKNOWN_OPTION` | an option is not in the rule set |
 | `OPTION_REQUIRES_DRIVE` | an option with `requires_drive` is combined with the `manual` drive |
+| `QUANTITY_OUT_OF_RANGE` | the quantity is outside the allowed range (limits are inclusive) |
 
 Options are checked in alphabetical order, so the result is the same on every run.
 
@@ -259,13 +290,27 @@ Example: 2500 mm x 2125 mm = 5.3125 m², smooth at 112.00 EUR per m² = 595.00 E
 standard drive at 349.00 EUR = 944.00 EUR, which is `94400` cents. With `double` insulation at
 18.00 EUR per m² the door costs 95.625 EUR more, rounded half up to 95.63 EUR.
 
+An order of several identical doors gets a quantity discount
+([spec](docs/specs/quantity-discount.md)):
+
+```
+discount percent = percent of the tier with the highest min_quantity <= quantity, else 0
+discount         = net price * quantity * discount percent / 100, rounded half up
+order total      = net price * quantity - discount
+```
+
+`discount_percent()`, `discount_cents()` and `total_net_price_cents()` calculate these three
+lines. The discount applies to all doors of the order and is rounded once. Example: 5 base
+doors are 4,720.00 EUR, the discount of 5 % is 236.00 EUR, the order total is 4,484.00 EUR.
+
 The rule set contains `vat_percent`, but no code uses it yet. All prices are net prices.
 
 ### `evaluate.py`
 
 `evaluate(config, rules)` combines both steps and returns a dictionary with `valid`,
-`violations` and `net_price_cents`. The price is `None` when there are violations. This
-dictionary is exactly what the command line and the JSON API print.
+`violations`, `net_price_cents` (one door), `quantity`, `discount_percent`, `discount_cents`
+and `total_net_price_cents` (the order). The three amounts and the percentage are `None` when
+there are violations. This dictionary is exactly what the command line and the JSON API print.
 
 ### `cli.py`
 
@@ -280,7 +325,7 @@ Built on `http.server` from the standard library.
 - `handle(target, rules)` answers one request and returns a `Response` (status, content type,
   body). It opens no socket, so the tests call it directly.
 - `parse_config()` turns query parameters into a `DoorConfiguration`. It raises `FormError` when
-  `surface` is missing or `width` or `height` is not a whole number. Whether the values are
+  `surface` is missing or `width`, `height` or `quantity` is not a whole number. Whether the values are
   *allowed* is decided later by `validate()`.
 - `render_page()` builds the HTML. The form is generated from the rule set: a new surface,
   insulation, drive or option in `rules.json` appears in the form without a code change. All
@@ -314,6 +359,8 @@ the web page translates violations, by their `code`.
   "insulations": { "thermo": { "price_cents_per_m2": 3200 } },
   "drives":   { "standard": { "price_cents": 34900, "max_width_mm": 5000 } },
   "options":  { "smart_control": { "price_cents": 12900, "requires_drive": true } },
+  "quantity": { "min": 1, "max": 50 },
+  "quantity_discounts": [ { "min_quantity": 5, "percent": 5 } ],
   "vat_percent": 19
 }
 ```
@@ -343,7 +390,13 @@ Current values:
 | `windows` | 219.00 EUR | no |
 | `smart_control` | 129.00 EUR | yes |
 
-To add a surface, insulation, drive or option, add an entry here. The name `manual` is special: the code
+| Quantity | Discount on the whole order |
+|---|---|
+| 1 to 4 doors | none |
+| 5 to 9 doors | 5 % |
+| 10 to 50 doors | 8 % |
+
+To add a surface, insulation, drive, option or discount tier, add an entry here. The name `manual` is special: the code
 treats it as "no motor".
 
 ### `data/messages/<language>.json`
@@ -405,6 +458,7 @@ python -m pytest
 | `tests/test_messages.py` | completeness of every language file and the fallback to English |
 | `tests/test_architecture.py` | fitness functions: allowed imports between modules, standard library only, no floats in pricing, file types per folder, context budget of the agent briefing |
 | `tests/test_insulation.py` | the insulation attribute in rules, pricing, command line, API, page and texts |
+| `tests/test_quantity.py` | the quantity discount, one test per acceptance criterion of the spec |
 
 `tests/conftest.py` provides two fixtures: `rules` (the rule set from `data/rules.json`) and
 `base_config` (a valid door: 2500 x 2125 mm, smooth, standard drive).

@@ -15,6 +15,7 @@ class DoorConfiguration:
     drive: str
     options: frozenset[str] = field(default_factory=frozenset)
     insulation: str = "single"
+    quantity: int = 1
 
 
 @dataclass(frozen=True)

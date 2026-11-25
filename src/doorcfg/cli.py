@@ -31,6 +31,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--drive", default="manual")
     parser.add_argument("--insulation", default="single")
     parser.add_argument("--option", action="append", default=[], help="repeatable")
+    parser.add_argument("--quantity", type=int, default=1, help="number of identical doors")
     return parser
 
 
@@ -47,6 +48,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         drive=args.drive,
         options=frozenset(args.option),
         insulation=args.insulation,
+        quantity=args.quantity,
     )
     result = evaluate(config, load_rules())
     print(json.dumps(result, indent=2))

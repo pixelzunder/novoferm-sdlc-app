@@ -10,10 +10,14 @@
     "surface": "Surface",
     "insulation": "Isolation",
     "drive": "Motorisation",
+    "quantity": "Quantité",
     "options": "Options",
     "submit": "Vérifier et calculer le prix",
     "ok_title": "Cette porte peut être fabriquée",
     "net_price": "prix net",
+    "net_total": "prix net pour {quantity} portes",
+    "per_door": "{price} par porte",
+    "discount": "{percent} % de remise sur quantité : -{amount}",
     "bad_title": "Cette porte ne peut pas être fabriquée",
     "input_title": "Saisie non comprise",
     "same_as_json": "La même réponse en JSON :",
@@ -27,6 +31,7 @@
     "UNKNOWN_DRIVE": "Cette motorisation n'existe pas.",
     "DRIVE_TOO_WEAK": "La motorisation est trop faible pour cette largeur.",
     "UNKNOWN_OPTION": "Cette option n'existe pas.",
-    "OPTION_REQUIRES_DRIVE": "Cette option nécessite une motorisation."
+    "OPTION_REQUIRES_DRIVE": "Cette option nécessite une motorisation.",
+    "QUANTITY_OUT_OF_RANGE": "La quantité est en dehors de la plage autorisée."
   }
 }

@@ -10,10 +10,14 @@
     "surface": "Powierzchnia",
     "insulation": "Izolacja",
     "drive": "Napęd",
+    "quantity": "Liczba sztuk",
     "options": "Opcje",
     "submit": "Sprawdź i wyceń",
     "ok_title": "Tę bramę można wykonać",
     "net_price": "cena netto",
+    "net_total": "cena netto za {quantity} szt.",
+    "per_door": "{price} za sztukę",
+    "discount": "{percent} % rabatu ilościowego: -{amount}",
     "bad_title": "Tej bramy nie można wykonać",
     "input_title": "Nie rozpoznano danych",
     "same_as_json": "Ta sama odpowiedź jako JSON:",
@@ -27,6 +31,7 @@
     "UNKNOWN_DRIVE": "Taki napęd nie istnieje.",
     "DRIVE_TOO_WEAK": "Napęd jest za słaby dla tej szerokości.",
     "UNKNOWN_OPTION": "Taka opcja nie istnieje.",
-    "OPTION_REQUIRES_DRIVE": "Ta opcja wymaga napędu silnikowego."
+    "OPTION_REQUIRES_DRIVE": "Ta opcja wymaga napędu silnikowego.",
+    "QUANTITY_OUT_OF_RANGE": "Liczba sztuk jest poza dozwolonym zakresem."
   }
 }

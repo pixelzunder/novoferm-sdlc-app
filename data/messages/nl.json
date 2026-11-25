@@ -10,10 +10,14 @@
     "surface": "Oppervlak",
     "insulation": "Isolatie",
     "drive": "Aandrijving",
+    "quantity": "Aantal",
     "options": "Opties",
     "submit": "Controleren en prijs berekenen",
     "ok_title": "Deze deur kan worden gebouwd",
     "net_price": "nettoprijs",
+    "net_total": "nettoprijs voor {quantity} deuren",
+    "per_door": "{price} per deur",
+    "discount": "{percent} % kwantumkorting: -{amount}",
     "bad_title": "Deze deur kan niet worden gebouwd",
     "input_title": "Invoer niet begrepen",
     "same_as_json": "Hetzelfde antwoord als JSON:",
@@ -27,6 +31,7 @@
     "UNKNOWN_DRIVE": "Deze aandrijving bestaat niet.",
     "DRIVE_TOO_WEAK": "De aandrijving is te zwak voor deze breedte.",
     "UNKNOWN_OPTION": "Deze optie bestaat niet.",
-    "OPTION_REQUIRES_DRIVE": "Deze optie vereist een motoraandrijving."
+    "OPTION_REQUIRES_DRIVE": "Deze optie vereist een motoraandrijving.",
+    "QUANTITY_OUT_OF_RANGE": "Het aantal ligt buiten het toegestane bereik."
   }
 }

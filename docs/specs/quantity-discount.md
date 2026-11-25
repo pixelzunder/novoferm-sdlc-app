@@ -1,6 +1,6 @@
 # Quantity discount
 
-Status: approved
+Status: implemented
 
 ## Goal
 

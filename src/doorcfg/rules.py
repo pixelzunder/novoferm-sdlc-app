@@ -39,6 +39,12 @@ class OptionRule:
 
 
 @dataclass(frozen=True)
+class DiscountTier:
+    min_quantity: int
+    percent: int
+
+
+@dataclass(frozen=True)
 class RuleSet:
     width_mm: Range
     height_mm: Range
@@ -46,6 +52,8 @@ class RuleSet:
     insulations: dict[str, int]
     drives: dict[str, DriveRule]
     options: dict[str, OptionRule]
+    quantity: Range
+    quantity_discounts: tuple[DiscountTier, ...]
     vat_percent: int
 
 
@@ -78,6 +86,11 @@ def parse_rules(raw: dict[str, Any]) -> RuleSet:
             )
             for name, entry in raw["options"].items()
         },
+        quantity=_range(raw["quantity"]),
+        quantity_discounts=tuple(
+            DiscountTier(min_quantity=int(entry["min_quantity"]), percent=int(entry["percent"]))
+            for entry in raw["quantity_discounts"]
+        ),
         vat_percent=int(raw["vat_percent"]),
     )
 
@@ -132,5 +145,13 @@ def validate(config: DoorConfiguration, rules: RuleSet) -> list[Violation]:
             violations.append(
                 Violation("OPTION_REQUIRES_DRIVE", f"Option '{name}' needs a motor drive.")
             )
+
+    if not rules.quantity.contains(config.quantity):
+        violations.append(
+            Violation(
+                "QUANTITY_OUT_OF_RANGE",
+                f"Quantity must be between {rules.quantity.min} and {rules.quantity.max} doors.",
+            )
+        )
 
     return violations
