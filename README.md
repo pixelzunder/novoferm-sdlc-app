@@ -363,6 +363,33 @@ git config core.hooksPath .githooks
 
 The hook uses the Python of `.venv` and needs the development tools (`pip install -e ".[dev]"`).
 
+## Context budget
+
+Everything a coding agent reads costs tokens, and it competes for the agent's attention. The
+repository therefore separates what is loaded in every session from what is loaded on demand:
+
+| Loaded | What | Characters |
+|---|---|---|
+| in every session | `AGENTS.md` and `CLAUDE.md` | about 2,500 (before the diet: about 4,300) |
+| in every session | one description per skill and subagent | about 700 |
+| when the task needs it | the skills `add-rule-entry`, `check-page` and `commit` | about 5,800 |
+| in its own context | the subagent `translator`, on the small model | about 1,200 |
+
+As a rule of thumb, four characters of English text are one token. Two fitness functions in
+`tests/test_architecture.py` keep the budget: `AGENTS.md` and `CLAUDE.md` together stay below
+3,000 characters, and every description stays below 200. When the first one fails, move
+knowledge that only some tasks need into a skill under `.claude/skills/`.
+
+The other half of the budget is how you work. In Claude Code:
+
+- **One task, one session.** `/clear` before the next task; `/compact` when a long task must
+  go on.
+- **Name the files.** `@data/rules.json` instead of "look at the project". The agent then reads
+  one file, not twenty.
+- **Let a subagent search.** It reads many files in its own context and returns the answer only.
+- **Small model for mechanical work**, for example translations (`translator`).
+- **Measure.** `/context` shows what fills the context window, `/cost` what the session cost.
+
 ## Tests
 
 ```
@@ -376,7 +403,7 @@ python -m pytest
 | `tests/test_cli.py` | output, exit codes and the `serve` command |
 | `tests/test_web.py` | page, JSON API, escaping, languages and a real HTTP request |
 | `tests/test_messages.py` | completeness of every language file and the fallback to English |
-| `tests/test_architecture.py` | fitness functions: allowed imports between modules, standard library only, no floats in pricing, file types per folder |
+| `tests/test_architecture.py` | fitness functions: allowed imports between modules, standard library only, no floats in pricing, file types per folder, context budget of the agent briefing |
 | `tests/test_insulation.py` | the insulation attribute in rules, pricing, command line, API, page and texts |
 
 `tests/conftest.py` provides two fixtures: `rules` (the rule set from `data/rules.json`) and

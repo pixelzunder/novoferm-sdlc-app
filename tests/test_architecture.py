@@ -121,3 +121,40 @@ def test_language_files_are_named_by_a_two_letter_code() -> None:
     names = sorted(path.name for path in (DATA / "messages").iterdir())
     wrong = [name for name in names if not (len(name) == 7 and name[:2].isalpha())]
     assert not wrong, f"Language files are named <code>.json, e.g. fr.json: {wrong}"
+
+
+# Context budget: what an agent reads in every session is limited, like a build size budget.
+BRIEFING = ("AGENTS.md", "CLAUDE.md")
+BRIEFING_BUDGET_CHARS = 3_000
+DESCRIPTION_BUDGET_CHARS = 200
+ON_DEMAND = sorted(
+    [*(ROOT / ".claude" / "skills").glob("*/SKILL.md"), *(ROOT / ".claude" / "agents").glob("*.md")]
+)
+
+
+def front_matter(path: Path) -> dict[str, str]:
+    """The 'key: value' lines between the two '---' lines at the top of a Markdown file."""
+    lines = path.read_text(encoding="utf-8").split("---")[1].strip().splitlines()
+    return {key.strip(): value.strip() for key, _, value in (line.partition(":") for line in lines)}
+
+
+def test_the_agent_briefing_stays_within_its_context_budget() -> None:
+    """AGENTS.md and CLAUDE.md are loaded into every session and cost tokens every time."""
+    size = sum(len((ROOT / name).read_text(encoding="utf-8")) for name in BRIEFING)
+    assert size <= BRIEFING_BUDGET_CHARS, (
+        f"{' + '.join(BRIEFING)} have {size} characters, the budget is {BRIEFING_BUDGET_CHARS}. "
+        "Move knowledge that only some tasks need into a skill under .claude/skills/."
+    )
+
+
+@pytest.mark.parametrize("path", ON_DEMAND, ids=lambda path: path.relative_to(ROOT).as_posix())
+def test_skills_and_subagents_announce_themselves_in_one_short_description(path: Path) -> None:
+    """Only the description is always loaded. The agent decides by it whether to read the rest."""
+    meta = front_matter(path)
+    expected_name = path.parent.name if path.name == "SKILL.md" else path.stem
+    assert meta.get("name") == expected_name, f"'name' must be '{expected_name}'."
+    assert meta.get("description"), "A description is required: without it nobody finds this."
+    assert len(meta["description"]) <= DESCRIPTION_BUDGET_CHARS, (
+        f"The description has {len(meta['description'])} characters, the budget is "
+        f"{DESCRIPTION_BUDGET_CHARS}. Say when to use it; the details belong in the body."
+    )
