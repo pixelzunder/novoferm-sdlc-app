@@ -38,6 +38,7 @@ front end. `tests/test_architecture.py` enforces this - do not relax it without 
 
 ## Read only when the task needs it
 
+- Skill `spec`: before every feature - interview the user, write `docs/specs/<feature>.md`
 - Skill `add-rule-entry`: a new surface, insulation, drive or option
 - Skill `check-page`: look at the page in a real browser after a change of `web.py`
 - Skill `commit`: every commit (message format, ticket number)
